@@ -1,8 +1,12 @@
-import 'package:caloriesgram/screens/signIn/sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:email_otp/email_otp.dart';
+
+import '../../services/google_auth_service.dart';
 import '../../values/app_colors.dart';
 import '../../values/app_constants.dart';
 import '../../values/app_strings.dart';
+import '../signIn/sign_in.dart';
+import '../verification/verification.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -13,17 +17,35 @@ class SignUpScreen extends StatefulWidget {
 
 class SignUpFormState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  String _username = '';
+  String _fullName = '';
+  String _email = '';
   String _password = '';
   String _confirmPassword = '';
   bool _isPasswordHidden = true;
   bool _isConfirmedPasswordHidden = true;
+
+  Future<void> _sendOTPAndNavigate() async {
+    bool isOTPSent = await EmailOTP.sendOTP(email: _email);
+    if (!mounted) return;
+
+    if (isOTPSent) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Verification(email: _email),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to send OTP. Please try again.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(''),
-      ),
+      appBar: AppBar(title: const Text('')),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
@@ -72,11 +94,12 @@ class SignUpFormState extends State<SignUpScreen> {
                     validator: (value) {
                       if (value?.isEmpty ?? true) {
                         return 'Please fill your full name';
+                      } else if (value!.length > 35) {
+                        return 'The maximum number of characters is 35.';
                       }
                       return null;
                     },
-                    //TODO: In future we can add full name validation like email validation
-                    onSaved: (value) => _username = value ?? '',
+                    onSaved: (value) => _fullName = value ?? '',
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -104,16 +127,12 @@ class SignUpFormState extends State<SignUpScreen> {
                     validator: (value) {
                       if (value!.isEmpty) {
                         return AppStrings.pleaseEnterEmailAddress;
-                      } else {
-                        if (AppConstants.emailRegex.hasMatch(value)) {
-                          return null;
-                        } else {
-                          return AppStrings.invalidEmailAddress;
-                        }
+                      } else if (!AppConstants.emailRegex.hasMatch(value)) {
+                        return AppStrings.invalidEmailAddress;
                       }
+                      return null;
                     },
-                    //TODO: In future we can add email validation like email validation
-                    onSaved: (value) => _username = value ?? '',
+                    onSaved: (value) => _email = value ?? '',
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -151,14 +170,17 @@ class SignUpFormState extends State<SignUpScreen> {
                       ),
                     ),
                     obscureText: _isPasswordHidden,
+                    onChanged: (value) {
+                      setState(() {
+                        _password = value;
+                      });
+                    },
                     validator: (value) {
                       if (value?.isEmpty ?? true) {
                         return 'Please fill your password';
                       }
                       return null;
                     },
-                    // TODO: In future we can add password validation like email validation
-                    onSaved: (value) => _password = value ?? '',
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -197,6 +219,11 @@ class SignUpFormState extends State<SignUpScreen> {
                       ),
                     ),
                     obscureText: _isConfirmedPasswordHidden,
+                    onChanged: (value) {
+                      setState(() {
+                        _confirmPassword = value;
+                      });
+                    },
                     validator: (value) {
                       if (value?.isEmpty ?? true) {
                         return 'Please confirm your password';
@@ -205,78 +232,67 @@ class SignUpFormState extends State<SignUpScreen> {
                       }
                       return null;
                     },
-                    // TODO: In future we can add password validation like email validation
-                    onSaved: (value) => _confirmPassword = value ?? '',
                   ),
                   const SizedBox(height: 36),
                   ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          _formKey.currentState?.save();
-                          print('Username: $_username, Password: $_password');
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        minimumSize: const Size(double.infinity, 58),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    onPressed: () async {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        _formKey.currentState?.save();
+                        await _sendOTPAndNavigate();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      minimumSize: const Size(double.infinity, 58),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
-                        'SIGN UP',
-                        style: TextStyle(
-                          color: AppColors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )),
-                  const SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: 8.0,
-                      bottom: 4.0,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: const Text(
+                      'SIGN UP',
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Text(
+                      "OR",
+                      style: TextStyle(
+                        color: AppColors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      GoogleAuthService().signInWithGoogle();
+                          },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 56),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      backgroundColor: Colors.transparent,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
-                          "OR",
-                          style: TextStyle(
-                            color: AppColors.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 16.0),
-                        TextButton(
-                          onPressed: () {
-                            // Need to add action
-                          },
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 56),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            backgroundColor: Colors.transparent,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.asset('assets/images/google.png'),
-                              const Padding(
-                                padding: EdgeInsets.only(left: 19.0),
-                                child: Text(
-                                  "Log in with Google",
-                                  style: TextStyle(
-                                    color: AppColors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ],
+                        Image.asset('assets/images/google.png'),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 19.0),
+                          child: Text(
+                            "Log in with Google",
+                            style: TextStyle(
+                              color: AppColors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
                       ],

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "981788314186",
+    "project_id": "caloriesgram-459d9",
+    "storage_bucket": "caloriesgram-459d9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:981788314186:android:70881987bc21d2c912f4b3",
+        "android_client_info": {
+          "package_name": "com.caloriesgram.caloriesgram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "981788314186-n2as30nq5mbmh5bdug12emv2isb9dm5b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMHsEgYwHII2LnueedUTgLEktmW34q5l0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "981788314186-n2as30nq5mbmh5bdug12emv2isb9dm5b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "981788314186-i2biqfogmrmjga6d59102nfiefi6bq7l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.caloriesgram.caloriesgram"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,8 +1,9 @@
-import 'package:caloriesgram/screens/signUp/sign_up.dart';
 import 'package:flutter/material.dart';
+import '../../services/google_auth_service.dart';
 import '../../values/app_colors.dart';
 import '../../values/app_constants.dart';
 import '../../values/app_strings.dart';
+import '../signUp/sign_up.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -23,10 +24,10 @@ class SignInFormState extends State<SignInScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(
-            horizontal: 32), // Отступы слева и справа
+            horizontal: 32), 
         child: Column(
           children: [
-            const Spacer(), // Заполняет все пространство сверху
+            const Spacer(), 
             Form(
               key: _formKey,
               child: Column(
@@ -208,7 +209,7 @@ class SignInFormState extends State<SignInScreen> {
                         const SizedBox(height: 16.0),
                         TextButton(
                           onPressed: () {
-                            // Need to add action
+                            GoogleAuthService().signInWithGoogle();
                           },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
@@ -241,7 +242,7 @@ class SignInFormState extends State<SignInScreen> {
                 ],
               ),
             ),
-            const Spacer(), // Заполняет все оставшееся пространство снизу
+            const Spacer(), 
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
