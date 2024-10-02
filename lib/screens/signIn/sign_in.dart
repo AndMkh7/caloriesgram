@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../services/google_auth_service.dart';
+import '../../services/responsive_sizer.dart';
 import '../../values/app_colors.dart';
 import '../../values/app_constants.dart';
 import '../../values/app_strings.dart';
@@ -23,8 +25,8 @@ class SignInFormState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 32), 
+        padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveSizer.horizontalScale(32)), 
         child: Column(
           children: [
             const Spacer(), 
@@ -32,15 +34,16 @@ class SignInFormState extends State<SignInScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 20),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        bottom: ResponsiveSizer.verticalScale(20)),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Sign in',
                         style: TextStyle(
                           color: AppColors.black,
-                          fontSize: 24,
+                          fontSize: ResponsiveSizer.moderateScale(24),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -55,16 +58,18 @@ class SignInFormState extends State<SignInScreen> {
                       labelText: "Email",
                       fillColor: AppColors.defaultTextColor,
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
+                        borderRadius: BorderRadius.circular(
+                            ResponsiveSizer.moderateScale(12)),
                         borderSide: const BorderSide(
                           color: AppColors.primaryColor,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: const BorderSide(
+                        borderRadius: BorderRadius.circular(
+                            ResponsiveSizer.moderateScale(12)),
+                        borderSide: BorderSide(
                           color: AppColors.borderColor,
-                          width: 2.0,
+                          width: ResponsiveSizer.horizontalScale(2),
                         ),
                       ),
                     ),
@@ -81,7 +86,7 @@ class SignInFormState extends State<SignInScreen> {
                     },
                     onSaved: (value) => _username = value ?? '',
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: ResponsiveSizer.verticalScale(20)),
                   TextFormField(
                     decoration: InputDecoration(
                       prefixIcon: const Icon(
@@ -91,16 +96,18 @@ class SignInFormState extends State<SignInScreen> {
                       labelText: "Enter Password",
                       fillColor: Colors.white,
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
+                        borderRadius: BorderRadius.circular(
+                            ResponsiveSizer.moderateScale(12)),
                         borderSide: const BorderSide(
                           color: AppColors.primaryColor,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: const BorderSide(
+                        borderRadius: BorderRadius.circular(
+                            ResponsiveSizer.moderateScale(12)),
+                        borderSide: BorderSide(
                           color: AppColors.borderColor,
-                          width: 2.0,
+                          width: ResponsiveSizer.horizontalScale(2),
                         ),
                       ),
                       suffixIcon: IconButton(
@@ -127,7 +134,7 @@ class SignInFormState extends State<SignInScreen> {
                     // TODO: In future we can add password validation like email validation
                     onSaved: (value) => _password = value ?? '',
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: ResponsiveSizer.verticalScale(20)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -142,12 +149,12 @@ class SignInFormState extends State<SignInScreen> {
                               });
                             },
                           ),
-                          const SizedBox(width: 8.0),
-                          const Text(
+                          SizedBox(width: ResponsiveSizer.horizontalScale(8)),
+                          Text(
                             "Remember Me",
                             style: TextStyle(
                               color: AppColors.black,
-                              fontSize: 14,
+                              fontSize: ResponsiveSizer.moderateScale(14),
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -156,64 +163,66 @@ class SignInFormState extends State<SignInScreen> {
                       TextButton(
                         style: TextButton.styleFrom(
                             foregroundColor: AppColors.black,
-                            textStyle: const TextStyle(
-                              fontSize: 14,
+                            textStyle: TextStyle(
+                              fontSize: ResponsiveSizer.moderateScale(14),
                               fontWeight: FontWeight.w400,
                             )),
-                        onPressed: () => {print("Forgot password")},
+                        onPressed: () => {},
                         child: const Text('Forgot password?'),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 36),
+                  SizedBox(height: ResponsiveSizer.verticalScale(36)),
                   ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
                           _formKey.currentState?.save();
-                          print('Login: $_username, Password: $_password');
                         }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryColor,
-                        minimumSize: const Size(double.infinity, 58),
+                        minimumSize: Size(double.infinity,
+                            ResponsiveSizer.horizontalScale(58)),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(
+                              ResponsiveSizer.moderateScale(12)),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'SIGN IN',
                         style: TextStyle(
                           color: AppColors.white,
-                          fontSize: 16,
+                          fontSize: ResponsiveSizer.moderateScale(16),
                           fontWeight: FontWeight.w500,
                         ),
                       )),
-                  const SizedBox(height: 24),
+                  SizedBox(height: ResponsiveSizer.verticalScale(24)),
                   Padding(
-                    padding: const EdgeInsets.only(
-                      top: 8.0,
-                      bottom: 4.0,
+                    padding: EdgeInsets.only(
+                      top: ResponsiveSizer.verticalScale(8),
+                      bottom: ResponsiveSizer.verticalScale(4),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           "OR",
                           style: TextStyle(
                             color: AppColors.grey,
-                            fontSize: 16,
+                            fontSize: ResponsiveSizer.moderateScale(16),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 16.0),
+                        SizedBox(height: ResponsiveSizer.verticalScale(16)),
                         TextButton(
                           onPressed: () {
                             GoogleAuthService().signInWithGoogle();
                           },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 56),
+                            minimumSize:
+                                Size(0, ResponsiveSizer.verticalScale(8)),
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             backgroundColor: Colors.transparent,
                           ),
@@ -221,14 +230,15 @@ class SignInFormState extends State<SignInScreen> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Image.asset('assets/images/google.png'),
-                              const Padding(
-                                padding: EdgeInsets.only(left: 19.0),
+                              SvgPicture.asset('assets/images/google.svg'),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    left: ResponsiveSizer.horizontalScale(19)),
                                 child: Text(
                                   "Log in with Google",
                                   style: TextStyle(
                                     color: AppColors.black,
-                                    fontSize: 16,
+                                    fontSize: ResponsiveSizer.moderateScale(16),
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
@@ -246,18 +256,19 @@ class SignInFormState extends State<SignInScreen> {
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 38),
+                padding:
+                    EdgeInsets.only(bottom: ResponsiveSizer.verticalScale(38)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Don’t have an account?",
                       style: TextStyle(
-                          fontSize: 15.0,
+                          fontSize: ResponsiveSizer.moderateScale(15),
                           fontWeight: FontWeight.w400,
                           color: AppColors.black),
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: ResponsiveSizer.horizontalScale(4)),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -265,10 +276,10 @@ class SignInFormState extends State<SignInScreen> {
                             MaterialPageRoute(
                                 builder: (context) => const SignUpScreen()));
                       },
-                      child: const Text(
+                      child: Text(
                         'Sign up',
                         style: TextStyle(
-                            fontSize: 15.0,
+                            fontSize: ResponsiveSizer.moderateScale(15),
                             fontWeight: FontWeight.w400,
                             color: AppColors.primaryColor),
                       ),
