@@ -3,7 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'screens/signIn/sign_in.dart';
+import 'screens/home/home.dart';
+import 'services/responsive_sizer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,9 @@ class CaloriesGramApp extends StatelessWidget {
   const CaloriesGramApp({super.key});
 
   @override
+
   Widget build(BuildContext context) {
+    ResponsiveSizer.init(context);
     return MaterialApp(
         title: '',
         theme: ThemeData(
@@ -29,6 +32,6 @@ class CaloriesGramApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
           textTheme: GoogleFonts.interTextTheme(),
         ),
-        home: const SignInScreen());
+        home: const HomeScreen());
   }
 }
