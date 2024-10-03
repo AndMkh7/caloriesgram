@@ -5,7 +5,7 @@ import '../../services/responsive_sizer.dart';
 import '../../values/app_colors.dart';
 import '../../values/app_constants.dart';
 import '../../values/app_strings.dart';
-import '../signUp/sign_up.dart';
+import '../sign_up/sign_up.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -26,10 +26,10 @@ class SignInFormState extends State<SignInScreen> {
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveSizer.horizontalScale(32)), 
+            horizontal: ResponsiveSizer.horizontalScale(32)),
         child: Column(
           children: [
-            const Spacer(), 
+            const Spacer(),
             Form(
               key: _formKey,
               child: Column(
@@ -252,7 +252,7 @@ class SignInFormState extends State<SignInScreen> {
                 ],
               ),
             ),
-            const Spacer(), 
+            const Spacer(),
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(

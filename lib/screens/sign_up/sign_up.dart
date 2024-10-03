@@ -7,7 +7,7 @@ import '../../services/responsive_sizer.dart';
 import '../../values/app_colors.dart';
 import '../../values/app_constants.dart';
 import '../../values/app_strings.dart';
-import '../signIn/sign_in.dart';
+import '../sign_in/sign_in.dart';
 import '../verification/verification.dart';
 
 class SignUpScreen extends StatefulWidget {

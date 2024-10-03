@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import '../../values/app_colors.dart';
-import '../signIn/sign_in.dart';
+import '../sign_in/sign_in.dart';
 
 class Verification extends StatefulWidget {
   final String email;
