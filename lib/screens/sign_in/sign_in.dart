@@ -142,7 +142,8 @@ class SignInFormState extends State<SignInScreen> {
                         children: [
                           Switch(
                             value: _isSwitched,
-                            activeColor: AppColors.primaryColor,
+                            activeColor: AppColors.white,
+                            activeTrackColor: AppColors.primaryColor,
                             onChanged: (bool value) {
                               setState(() {
                                 _isSwitched = value;
@@ -185,7 +186,7 @@ class SignInFormState extends State<SignInScreen> {
                             ResponsiveSizer.horizontalScale(58)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              ResponsiveSizer.moderateScale(12)),
+                              ResponsiveSizer.moderateScale(15)),
                         ),
                       ),
                       child: Text(

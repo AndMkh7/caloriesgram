@@ -259,7 +259,7 @@ class SignUpFormState extends State<SignUpScreen> {
                           double.infinity, ResponsiveSizer.verticalScale(58)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                            ResponsiveSizer.moderateScale(12)),
+                            ResponsiveSizer.moderateScale(15)),
                       ),
                     ),
                     child: Text(
