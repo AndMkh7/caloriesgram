@@ -3,6 +3,7 @@ import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import '../../services/responsive_sizer.dart';
 import '../../values/app_colors.dart';
 import '../sign_in/sign_in.dart';
 
@@ -72,31 +73,38 @@ class VerificationState extends State<Verification> {
     return Scaffold(
       appBar: AppBar(title: const Text('')),
       body: ListView(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(ResponsiveSizer.verticalScale(32)),
         children: [
-          const Text(
+          Text(
             'Verification',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+            style: TextStyle(
+                fontSize: ResponsiveSizer.moderateScale(24),
+                fontWeight: FontWeight.w500),
           ),
-          const SizedBox(height: 13),
-          const Text(
+          SizedBox(height: ResponsiveSizer.verticalScale(13)),
+          Text(
             'We\'ve sent you the verification',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+            style: TextStyle(
+                fontSize: ResponsiveSizer.moderateScale(15),
+                fontWeight: FontWeight.w400),
           ),
-          const Text(
+          Text(
             'code on your mail',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+            style: TextStyle(
+                fontSize: ResponsiveSizer.moderateScale(15),
+                fontWeight: FontWeight.w400),
           ),
-          const SizedBox(height: 27.0),
+          SizedBox(height: ResponsiveSizer.verticalScale(27)),
           OtpTextField(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             keyboardType: TextInputType.number,
             numberOfFields: 4,
             focusedBorderColor: AppColors.primaryColor,
             enabledBorderColor: AppColors.borderColor,
-            borderRadius: BorderRadius.circular(15),
+            borderRadius:
+                BorderRadius.circular(ResponsiveSizer.moderateScale(15)),
             showFieldAsBox: true,
-            fieldWidth: 55,
+            fieldWidth: ResponsiveSizer.horizontalScale(55),
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
             ],
@@ -116,10 +124,10 @@ class VerificationState extends State<Verification> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text(
+                          child: Text(
                             'OK',
                             style: TextStyle(
-                                fontSize: 18,
+                                fontSize: ResponsiveSizer.moderateScale(18),
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.primaryColor),
                           ),
@@ -141,10 +149,10 @@ class VerificationState extends State<Verification> {
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text(
+                          child: Text(
                             'OK',
                             style: TextStyle(
-                                fontSize: 18,
+                                fontSize: ResponsiveSizer.moderateScale(18),
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.primaryColor),
                           ),
@@ -156,10 +164,10 @@ class VerificationState extends State<Verification> {
               }
             },
           ),
-          const SizedBox(height: 40),
+          SizedBox(height: ResponsiveSizer.verticalScale(40)),
           SizedBox(
             width: double.infinity,
-            height: 58,
+            height: ResponsiveSizer.verticalScale(58),
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pushReplacement(
@@ -172,29 +180,33 @@ class VerificationState extends State<Verification> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius:
+                      BorderRadius.circular(ResponsiveSizer.moderateScale(15)),
                 ),
               ),
-              child: const Text('CONTINUE',
+              child: Text('CONTINUE',
                   style: TextStyle(
-                      fontSize: 16,
+                      fontSize: ResponsiveSizer.moderateScale(16),
                       fontWeight: FontWeight.bold,
                       color: Colors.white)),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: ResponsiveSizer.verticalScale(24)),
           Center(
             child: Text.rich(
               TextSpan(
                 children: [
-                  const TextSpan(
+                  TextSpan(
                     text: 'Re-send code in ',
-                    style: TextStyle(fontSize: 15, color: AppColors.black),
+                    style: TextStyle(
+                        fontSize: ResponsiveSizer.moderateScale(15),
+                        color: AppColors.black),
                   ),
                   TextSpan(
                     text: _formatTime(_secondsRemaining),
-                    style: const TextStyle(
-                        fontSize: 15, color: AppColors.primaryColor),
+                    style: TextStyle(
+                        fontSize: ResponsiveSizer.moderateScale(15),
+                        color: AppColors.primaryColor),
                   ),
                 ],
               ),
