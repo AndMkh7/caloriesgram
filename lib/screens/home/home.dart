@@ -17,11 +17,11 @@ class HomeScreen extends StatefulWidget {
   @override
   HomeScreenState createState() => HomeScreenState();
 }
-
 class HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   int _currentPage1 = 0;
   int _currentPage2 = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +30,8 @@ class HomeScreenState extends State<HomeScreen> {
             top: MediaQuery.of(context).padding.top +
                 ResponsiveSizer.verticalScale(10),
             left: ResponsiveSizer.horizontalScale(32),
-            right: ResponsiveSizer.horizontalScale(32)),
+          right: ResponsiveSizer.horizontalScale(32),
+        ),
         child: Column(
           children: [
             const Header(),
@@ -46,7 +47,8 @@ class HomeScreenState extends State<HomeScreen> {
                     fontWeight: FontWeight.w700),
               ),
             ),
-            Expanded(
+            SizedBox(
+              height: ResponsiveSizer.verticalScale(198), 
               child: PageView(
                 controller: _pageController,
                 onPageChanged: (int page) {
@@ -61,26 +63,30 @@ class HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            SizedBox(height: ResponsiveSizer.verticalScale(16)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Indicator(_currentPage1 == 0),
-                Indicator(_currentPage1 == 1),
-                Indicator(_currentPage1 == 2),
-              ],
+            SizedBox(height: ResponsiveSizer.verticalScale(5)),
+            SizedBox(
+              height: ResponsiveSizer.verticalScale(24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Indicator(_currentPage1 == 0),
+                  Indicator(_currentPage1 == 1),
+                  Indicator(_currentPage1 == 2),
+                ],
+              ),
             ),
-            SizedBox(height: ResponsiveSizer.verticalScale(32)),
+            SizedBox(height: ResponsiveSizer.verticalScale(15)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Expanded(child: StepsCard()),
-                SizedBox(width: ResponsiveSizer.horizontalScale(16)),
+                SizedBox(width: ResponsiveSizer.horizontalScale(22)),
                 const Expanded(child: ExerciseCard()),
               ],
             ),
-            SizedBox(height: ResponsiveSizer.verticalScale(32)),
-            Expanded(
+            SizedBox(height: ResponsiveSizer.verticalScale(24)),
+            SizedBox(
+              height: ResponsiveSizer.verticalScale(198), 
               child: PageView(
                 controller: _pageController,
                 onPageChanged: (int page) {
@@ -94,15 +100,17 @@ class HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            SizedBox(height: ResponsiveSizer.verticalScale(16)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Indicator(_currentPage2 == 0),
-                Indicator(_currentPage2 == 1),
-              ],
+            SizedBox(height: ResponsiveSizer.verticalScale(5)),
+            SizedBox(
+              height: ResponsiveSizer.verticalScale(24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Indicator(_currentPage2 == 0),
+                  Indicator(_currentPage2 == 1),
+                ],
+              ),
             ),
-            SizedBox(height: ResponsiveSizer.verticalScale(16)),
           ],
         ),
       ),
