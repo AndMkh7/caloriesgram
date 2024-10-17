@@ -1,5 +1,6 @@
+import 'package:caloriesgram/services/firestore.dart';
 import 'package:caloriesgram/values/app_colors.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,15 +9,30 @@ import '../../values/app_constants.dart';
 import '../../values/app_strings.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  final String fullName;
+  final String email;
+  const EditProfileScreen(
+      {super.key, required this.fullName, required this.email});
 
   @override
   State<EditProfileScreen> createState() => EditProfileScreenState();
 }
 
 class EditProfileScreenState extends State<EditProfileScreen> {
+  final _formKey = GlobalKey<FormState>();
+  Future<void> _updateFullName() async {
+    await FirestoreService().updateFullName(_fullName);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fullName = widget.fullName;
+    _email = widget.email;
+  }
   String _fullName = '';
   String _email = '';
+  User? user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -73,7 +89,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
             ),
             SizedBox(height: ResponsiveSizer.verticalScale(55)),
             Text(
-              'Anna Adams',
+              _fullName,
               style: TextStyle(
                 fontSize: ResponsiveSizer.moderateScale(24),
                 fontWeight: FontWeight.w700,
@@ -81,7 +97,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
             ),
             SizedBox(height: ResponsiveSizer.verticalScale(5)),
             Text(
-              'youremail@domain.com',
+              _email,
               style: TextStyle(
                 fontSize: ResponsiveSizer.moderateScale(14),
                 fontWeight: FontWeight.w400,
@@ -93,100 +109,115 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     top: ResponsiveSizer.verticalScale(73),
                     left: ResponsiveSizer.horizontalScale(32),
                     right: ResponsiveSizer.horizontalScale(32)),
-                child: Column(children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(
-                        Icons.person,
-                        color: AppColors.inputIconColor,
-                      ),
-                      labelText: "Full name",
-                      fillColor: AppColors.defaultTextColor,
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                            ResponsiveSizer.moderateScale(12)),
-                        borderSide: const BorderSide(
-                          color: AppColors.primaryColor,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(
+                          Icons.person,
+                          color: AppColors.inputIconColor,
+                        ),
+                        labelText: "Full name",
+                        fillColor: AppColors.defaultTextColor,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                              ResponsiveSizer.moderateScale(12)),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                              ResponsiveSizer.moderateScale(12)),
+                          borderSide: BorderSide(
+                            color: AppColors.borderColor,
+                            width: ResponsiveSizer.horizontalScale(2),
+                          ),
                         ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                            ResponsiveSizer.moderateScale(12)),
-                        borderSide: BorderSide(
-                          color: AppColors.borderColor,
-                          width: ResponsiveSizer.horizontalScale(2),
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Please fill your full name';
+                        } else if (value!.length > 35) {
+                          return 'The maximum number of characters is 35.';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) async {
+                        setState(() {
+                          _fullName = value!;
+                        });
+                      },
+                    ),
+                    SizedBox(height: ResponsiveSizer.verticalScale(20)),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: AppColors.inputIconColor,
+                        ),
+                        labelText: "Email",
+                        fillColor: AppColors.defaultTextColor,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                              ResponsiveSizer.moderateScale(12)),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                              ResponsiveSizer.moderateScale(12)),
+                          borderSide: BorderSide(
+                            color: AppColors.borderColor,
+                            width: ResponsiveSizer.horizontalScale(2),
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return AppStrings.pleaseEnterEmailAddress;
+                        } else if (!AppConstants.emailRegex.hasMatch(value)) {
+                          return AppStrings.invalidEmailAddress;
+                        }
+                        return null;
+                      },
+                      onSaved: (value) => _email = value ?? '',
+                    ),
+                    SizedBox(height: ResponsiveSizer.verticalScale(21)),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          await _updateFullName();
+
+                          Navigator.pop(context, _fullName);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        minimumSize: Size(
+                            double.infinity, ResponsiveSizer.verticalScale(58)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              ResponsiveSizer.moderateScale(15)),
+                        ),
+                      ),
+                      child: Text(
+                        'SUBMIT',
+                        style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: ResponsiveSizer.moderateScale(16),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please fill your full name';
-                      } else if (value!.length > 35) {
-                        return 'The maximum number of characters is 35.';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) => _fullName = value ?? '',
-                  ),
-                  SizedBox(height: ResponsiveSizer.verticalScale(20)),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(
-                        Icons.email_outlined,
-                        color: AppColors.inputIconColor,
-                      ),
-                      labelText: "Email",
-                      fillColor: AppColors.defaultTextColor,
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                            ResponsiveSizer.moderateScale(12)),
-                        borderSide: const BorderSide(
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                            ResponsiveSizer.moderateScale(12)),
-                        borderSide: BorderSide(
-                          color: AppColors.borderColor,
-                          width: ResponsiveSizer.horizontalScale(2),
-                        ),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return AppStrings.pleaseEnterEmailAddress;
-                      } else if (!AppConstants.emailRegex.hasMatch(value)) {
-                        return AppStrings.invalidEmailAddress;
-                      }
-                      return null;
-                    },
-                    onSaved: (value) => _email = value ?? '',
-                  ),
-                  SizedBox(height: ResponsiveSizer.verticalScale(21)),
-                  ElevatedButton(
-                    onPressed: () async {
-                      //TODO:implement the user Full name and Email update functionality
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      minimumSize: Size(
-                          double.infinity, ResponsiveSizer.verticalScale(58)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            ResponsiveSizer.moderateScale(15)),
-                      ),
-                    ),
-                    child: Text(
-                      'SUBMIT',
-                      style: TextStyle(
-                        color: AppColors.white,
-                        fontSize: ResponsiveSizer.moderateScale(16),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ])),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

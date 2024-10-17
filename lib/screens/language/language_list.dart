@@ -1,4 +1,3 @@
-String selectedLanguage = 'English';
 final List<String> suggestedLanguages = ['English (UK)', 'English (US)'];
 final List<String> otherLanguages = [
   'Armenian',

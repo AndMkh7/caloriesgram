@@ -3,13 +3,19 @@ import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import '../../services/firebase_auth_by_email_and_password.dart';
 import '../../services/responsive_sizer.dart';
 import '../../values/app_colors.dart';
-import '../sign_in/sign_in.dart';
 
 class Verification extends StatefulWidget {
   final String email;
-  const Verification({super.key, required this.email});
+  final String password;
+  final String fullName;
+  const Verification(
+      {super.key,
+      required this.email,
+      required this.password,
+      required this.fullName}); 
 
   @override
   VerificationState createState() => VerificationState();
@@ -118,7 +124,8 @@ class VerificationState extends State<Verification> {
                   builder: (context) {
                     return AlertDialog(
                       title: const Text("Verification Code"),
-                      content: const Text('OTP was correct.'),
+                      content: const Text(
+                          'OTP was correct. Press CONTINUE button to enjoy the app.'),
                       actions: [
                         TextButton(
                           onPressed: () {
@@ -169,13 +176,12 @@ class VerificationState extends State<Verification> {
             width: double.infinity,
             height: ResponsiveSizer.verticalScale(58),
             child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SignInScreen(),
-                  ),
-                );
+              onPressed: () async {
+                await FirebaseAuthService().signUp(
+                    email: widget.email,
+                    password: widget.password,
+                    fullName: widget.fullName,
+                    context: context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,

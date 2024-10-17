@@ -4,11 +4,13 @@ import 'package:caloriesgram/screens/edit_profile/edit_profile.dart';
 import 'package:caloriesgram/screens/language/language.dart';
 import 'package:caloriesgram/screens/privacy_policy/privacy_policy.dart';
 import 'package:caloriesgram/values/app_colors.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../services/firestore.dart';
 import '../../services/responsive_sizer.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -19,8 +21,44 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isSwitched = false;
-  String _selectedLanguage = 'English';
+  User? user = FirebaseAuth.instance.currentUser;
+  String fullName = '';
+  String email = '';
+  bool? isNotificationsTurnedOn;
+  String selectedLanguage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  Future<void> getUserData() async {
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(user!.email)
+            .get();
+
+        if (userDoc.exists) {
+          print('Document exists: ${userDoc.data()}');
+          setState(() {
+            fullName = userDoc.get('fullName') ?? 'No Name';
+            email = userDoc.get('email') ?? user!.email!;
+            isNotificationsTurnedOn = userDoc.get('isNotificationsTurnedOn');
+            selectedLanguage = userDoc.get('selectedLanguage');
+          });
+        } else {
+          print('Document does not exist');
+        }
+      } catch (e) {
+        print('Error fetching user data: $e');
+      }
+    } else {
+      print('User is null');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +115,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             SizedBox(height: ResponsiveSizer.verticalScale(55)),
+     
             Text(
-              'Anna Adams',
+              fullName,
               style: TextStyle(
                 fontSize: ResponsiveSizer.moderateScale(24),
                 fontWeight: FontWeight.w700,
@@ -86,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: ResponsiveSizer.verticalScale(5)),
             Text(
-              'youremail@domain.com',
+              email,
               style: TextStyle(
                 fontSize: ResponsiveSizer.moderateScale(14),
                 fontWeight: FontWeight.w400,
@@ -131,9 +170,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const EditProfileScreen(),
-                        ),
-                      );
+                            builder: (context) => EditProfileScreen(
+                                fullName: fullName, email: email)),
+                      ).then((updatedFullName) {
+                        if (updatedFullName != null) {
+                          setState(() {
+                            fullName =
+                                updatedFullName; 
+                          });
+                        }
+                      });
                     },
                   ),
                   ProfileListTile(
@@ -204,12 +250,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           fontWeight: FontWeight.w400,
                           color: AppColors.black),
                     ),
-                    value: _isSwitched,
-                    onChanged: (value) {
+
+                    value: isNotificationsTurnedOn ?? false,
+                    onChanged: (value) async {
                       setState(() {
-                        _isSwitched = value;
+                        isNotificationsTurnedOn = value;
                       });
+
+                      await FirestoreService()
+                          .updateNotificationPreference(value);
                     },
+
                   ),
                   ProfileListTile(
                     icon: Container(
@@ -228,8 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: AppColors.black),
                     ),
                     trailing: Text(
-                      _selectedLanguage,
-                      //Set language from LanguageScreen
+                      selectedLanguage,
                       style: TextStyle(
                           fontSize: ResponsiveSizer.moderateScale(14),
                           fontWeight: FontWeight.w400,
@@ -244,7 +294,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                       if (language != null) {
                         setState(() {
-                          _selectedLanguage = language;
+                          selectedLanguage = language;
                         });
                       }
                     },
@@ -326,15 +376,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 class ProfileListTile extends StatelessWidget {
   final Widget icon;
   final Widget title;
-  final VoidCallback onTap;
   final Widget? trailing;
+  final VoidCallback? onTap;
 
   const ProfileListTile({
-    super.key,
+    super.key, 
     required this.icon,
     required this.title,
-    required this.onTap,
     this.trailing,
+    this.onTap,
   });
 
   @override

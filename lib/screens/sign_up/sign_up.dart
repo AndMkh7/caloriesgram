@@ -1,8 +1,9 @@
+import 'package:caloriesgram/services/firebase_auth_by_email_and_password.dart';
 import 'package:flutter/material.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../services/google_auth_service.dart';
+import '../../navigation/bottom_navigation/bottom_navigation.dart';
 import '../../services/responsive_sizer.dart';
 import '../../values/app_colors.dart';
 import '../../values/app_constants.dart';
@@ -25,7 +26,6 @@ class SignUpFormState extends State<SignUpScreen> {
   String _confirmPassword = '';
   bool _isPasswordHidden = true;
   bool _isConfirmedPasswordHidden = true;
-
   Future<void> _sendOTPAndNavigate() async {
     bool isOTPSent = await EmailOTP.sendOTP(email: _email);
     if (!mounted) return;
@@ -34,7 +34,12 @@ class SignUpFormState extends State<SignUpScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Verification(email: _email),
+          builder: (context) =>
+              Verification(
+            email: _email,
+            password: _password,
+            fullName: _fullName,
+          ),
         ),
       );
     } else {
@@ -285,15 +290,21 @@ class SignUpFormState extends State<SignUpScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      GoogleAuthService().signInWithGoogle();
-                          },
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size(0, ResponsiveSizer.verticalScale(56)),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      backgroundColor: Colors.transparent,
-                    ),
+                    onPressed: () async {
+                      try {
+                    
+                        await FirebaseAuthService()
+                            .signInWithGoogle(context: context);
+                        await Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  const BottomNavBar()),
+                        );
+                      } catch (e) {
+                        print(e);
+                      }
+                    },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,

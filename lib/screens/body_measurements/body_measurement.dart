@@ -2,6 +2,7 @@ import 'package:caloriesgram/values/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:caloriesgram/services/firestore.dart';
 
 import '../../services/responsive_sizer.dart';
 
@@ -24,18 +25,53 @@ class BodyMeasurementsScreenState extends State<BodyMeasurementsScreen> {
   final List<double> _heights = List.generate(100, (index) => 120.0 + index);
 
   String _currentlyOpenPicker = '';
-  int _tempSelectedYear = 2001;
-  String _tempSelectedGender = 'Female';
-  double _tempSelectedWeight = 55;
-  double _tempSelectedHeight = 160;
+  late String _tempSelectedGender;
+  late int _tempSelectedYear;
+  late double _tempSelectedWeight;
+  late double _tempSelectedHeight;
+
+  final FirestoreService _firestoreService = FirestoreService();
+
+  @override
+  void initState() {
+    super.initState();
+    _tempSelectedGender = _selectedGender;
+    _tempSelectedYear = _selectedYear;
+    _tempSelectedWeight = _selectedWeight;
+    _tempSelectedHeight = _selectedHeight;
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userData = await _firestoreService.getUserData();
+    if (userData != null) {
+      setState(() {
+        _selectedGender = userData['sex'] ?? 'Female';
+        _selectedYear = userData['yearOfBirth'] ?? 2001;
+        _selectedWeight = userData['weight'] ?? 55;
+        _selectedHeight = userData['height'] ?? 160;
+
+        _tempSelectedGender = _selectedGender;
+        _tempSelectedYear = _selectedYear;
+        _tempSelectedWeight = _selectedWeight;
+        _tempSelectedHeight = _selectedHeight;
+      });
+    }
+  }
+
+  Future<void> _updateUserData() async {
+    await _firestoreService.updateUserData({
+      'sex': _selectedGender,
+      'yearOfBirth': _selectedYear,
+      'weight': _selectedWeight,
+      'height': _selectedHeight,
+    });
+  }
 
   void _togglePicker(String pickerType) {
     setState(() {
-      if (_currentlyOpenPicker == pickerType) {
-        _currentlyOpenPicker = '';
-      } else {
-        _currentlyOpenPicker = pickerType;
-      }
+      _currentlyOpenPicker =
+          (_currentlyOpenPicker == pickerType) ? '' : pickerType;
     });
   }
 
@@ -50,15 +86,8 @@ class BodyMeasurementsScreenState extends State<BodyMeasurementsScreen> {
             child: TextButton(
               onPressed: () {
                 setState(() {
-                  if (_currentlyOpenPicker == 'gender') {
-                    _selectedGender = _tempSelectedGender;
-                  } else if (_currentlyOpenPicker == 'year') {
-                    _selectedYear = _tempSelectedYear;
-                  } else if (_currentlyOpenPicker == 'weight') {
-                    _selectedWeight = _tempSelectedWeight;
-                  } else if (_currentlyOpenPicker == 'height') {
-                    _selectedHeight = _tempSelectedHeight;
-                  }
+                  _updateSelectedData();
+                  _updateUserData();
                   _currentlyOpenPicker = '';
                 });
               },
@@ -75,12 +104,39 @@ class BodyMeasurementsScreenState extends State<BodyMeasurementsScreen> {
               onSelectedItemChanged: onSelectedItemChanged,
               scrollController:
                   FixedExtentScrollController(initialItem: selectedIndex),
-              children: items.map((item) => Text(item.toString())).toList(),
+              children: items.map((item) {
+                return Center(
+                  child: Text(
+                    item.toString(),
+                    style: TextStyle(
+                      fontSize: ResponsiveSizer.moderateScale(16),
+                      color: AppColors.black,
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _updateSelectedData() {
+    switch (_currentlyOpenPicker) {
+      case 'gender':
+        _selectedGender = _tempSelectedGender;
+        break;
+      case 'year':
+        _selectedYear = _tempSelectedYear;
+        break;
+      case 'weight':
+        _selectedWeight = _tempSelectedWeight;
+        break;
+      case 'height':
+        _selectedHeight = _tempSelectedHeight;
+        break;
+    }
   }
 
   @override
@@ -212,45 +268,22 @@ class BodyMeasurementsScreenState extends State<BodyMeasurementsScreen> {
   }
 
   Widget _getIconForTitle(String title) {
-    switch (title) {
-      case 'Sex':
-        return Container(
-          height: ResponsiveSizer.verticalScale(20),
-          width: ResponsiveSizer.horizontalScale(20),
-          alignment: Alignment.center,
-          child: SvgPicture.asset('assets/images/sex.svg',
-              width: ResponsiveSizer.horizontalScale(24),
-              height: ResponsiveSizer.verticalScale(24)),
-        );
-      case 'Year of birth':
-        return Container(
-          height: ResponsiveSizer.verticalScale(20),
-          width: ResponsiveSizer.horizontalScale(20),
-          alignment: Alignment.center,
-          child: SvgPicture.asset('assets/images/cake.svg',
-              width: ResponsiveSizer.horizontalScale(24),
-              height: ResponsiveSizer.verticalScale(24)),
-        );
-      case 'Weight':
-        return Container(
-          height: ResponsiveSizer.verticalScale(20),
-          width: ResponsiveSizer.horizontalScale(20),
-          alignment: Alignment.center,
-          child: SvgPicture.asset('assets/images/scale.svg',
-              width: ResponsiveSizer.horizontalScale(24),
-              height: ResponsiveSizer.verticalScale(24)),
-        );
-      case 'Height':
-        return Container(
-          height: ResponsiveSizer.verticalScale(20),
-          width: ResponsiveSizer.horizontalScale(20),
-          alignment: Alignment.center,
-          child: SvgPicture.asset('assets/images/height.svg',
-              width: ResponsiveSizer.horizontalScale(24),
-              height: ResponsiveSizer.verticalScale(24)),
-        );
-      default:
-        return Icon(Icons.info, size: ResponsiveSizer.horizontalScale(24));
-    }
+    final iconPaths = {
+      'Sex': 'assets/images/sex.svg',
+      'Year of birth': 'assets/images/cake.svg',
+      'Weight': 'assets/images/scale.svg',
+      'Height': 'assets/images/height.svg',
+    };
+
+    return Container(
+      height: ResponsiveSizer.verticalScale(20),
+      width: ResponsiveSizer.horizontalScale(20),
+      alignment: Alignment.center,
+      child: SvgPicture.asset(
+        iconPaths[title] ?? '',
+        width: ResponsiveSizer.horizontalScale(24),
+        height: ResponsiveSizer.verticalScale(24),
+      ),
+    );
   }
 }

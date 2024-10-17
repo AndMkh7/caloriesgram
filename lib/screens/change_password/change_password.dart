@@ -1,5 +1,5 @@
 import 'package:caloriesgram/values/app_colors.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -16,6 +16,7 @@ class ChangePasswordScreen extends StatefulWidget {
 class ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  String _currentPassword = '';
   String _password = '';
   String _confirmPassword = '';
   bool _isNewPasswordHidden = true;
@@ -124,6 +125,11 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         ),
                       ),
                       obscureText: _isCurrentPasswordHidden,
+                      onChanged: (value) {
+                        setState(() {
+                          _currentPassword = value;
+                        });
+                      },
                       validator: (value) {
                         if (value?.isEmpty ?? true) {
                           return 'Please fill your current password';
@@ -227,46 +233,85 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       },
                       validator: (value) {
                         if (value?.isEmpty ?? true) {
-                          return 'Please confirm your password';
-                        } else if (value != _password) {
+                          return 'Please confirm your new password';
+                        }
+                        if (value != _password) {
                           return 'Passwords do not match';
                         }
                         return null;
                       },
                     ),
-                    SizedBox(height: ResponsiveSizer.verticalScale(21)),
+                    SizedBox(height: ResponsiveSizer.verticalScale(30)),
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
                           _formKey.currentState?.save();
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Password changed successfully."),
-                            ),
-                          );
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const ProfileScreen()),
-                          );
+                          try {
+                            User? user = FirebaseAuth.instance.currentUser;
+                            if (user != null) {
+                              final credential = EmailAuthProvider.credential(
+                                email: user.email!,
+                                password: _currentPassword,
+                              );
+                              await user
+                                  .reauthenticateWithCredential(credential);
+
+                              await user.updatePassword(_password);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text("Password changed successfully."),
+                                ),
+                              );
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ProfileScreen()),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Failed to change password."),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (e is FirebaseAuthException &&
+                                e.code == 'wrong-password') {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "The current password is entered incorrectly."),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Error: $e"),
+                                ),
+                              );
+                            }
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryColor,
+                        foregroundColor: AppColors.white,
                         minimumSize: Size(
                             double.infinity, ResponsiveSizer.verticalScale(58)),
+                        elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              ResponsiveSizer.moderateScale(15)),
+                              ResponsiveSizer.moderateScale(12)),
                         ),
                       ),
                       child: Text(
                         'SUBMIT',
                         style: TextStyle(
-                          color: AppColors.white,
-                          fontSize: ResponsiveSizer.moderateScale(16),
-                          fontWeight: FontWeight.w500,
+                          fontSize: ResponsiveSizer.moderateScale(18),
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
