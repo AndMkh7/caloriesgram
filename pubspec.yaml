@@ -46,6 +46,8 @@ dependencies:
   percent_indicator: ^4.2.3
   font_awesome_flutter: ^10.7.0
   fl_chart: ^0.69.0
+  cloud_firestore: ^5.4.4
+  fluttertoast: ^8.2.8
 
 dev_dependencies:
   flutter_test:
