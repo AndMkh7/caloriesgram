@@ -191,4 +191,14 @@ class FirebaseAuthService {
     }
 }
 
+  Future<void> resetPassword(String email) async {
+    try {
+      await auth.sendPasswordResetEmail(email: email);
+      await _googleSignIn.signOut();
+      await Future.delayed(const Duration(seconds: 1));
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
 }

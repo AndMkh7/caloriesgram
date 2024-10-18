@@ -1,3 +1,4 @@
+import 'package:caloriesgram/screens/reset_password/reset_password.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../navigation/bottom_navigation/bottom_navigation.dart';
@@ -133,7 +134,7 @@ class SignInFormState extends State<SignInScreen> {
                   },
                   onSaved: (value) => _password = value ?? '',
                 ),
-                SizedBox(height: ResponsiveSizer.verticalScale(20)),
+                SizedBox(height: ResponsiveSizer.verticalScale(10)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -167,7 +168,13 @@ class SignInFormState extends State<SignInScreen> {
                             fontSize: ResponsiveSizer.moderateScale(14),
                             fontWeight: FontWeight.w400,
                           )),
-                      onPressed: () => {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const ResetPasswordScreen()));
+                      },
                       child: const Text('Forgot password?'),
                     ),
                   ],

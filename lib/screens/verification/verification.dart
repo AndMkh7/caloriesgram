@@ -79,7 +79,7 @@ class VerificationState extends State<Verification> {
     return Scaffold(
       appBar: AppBar(title: const Text('')),
       body: ListView(
-        padding: EdgeInsets.all(ResponsiveSizer.verticalScale(32)),
+        padding: EdgeInsets.all(ResponsiveSizer.horizontalScale(32)),
         children: [
           Text(
             'Verification',
