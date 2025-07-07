@@ -20,6 +20,9 @@ class AppColors {
   static const Color red = Color(0xffC35555);
   static const Color weightCartColor = Color(0xffDEE6FF);
   static const Color weightCartLine = Color(0xff21367E);
+
+
+  
   static const Color stepsCartColor = Color(0xffC35555);
 
 }
