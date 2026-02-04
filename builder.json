@@ -1,11 +1,13 @@
 {
-  "project": "caloriegram",
+  "project": "caloriesgram",
   "platform": "ios",
   "github": {
     "owner": "AndMkh7",
     "repo": "caloriesgram"
   },
-  "ios": {},
+  "ios": {
+    "path": "ios"
+  },
   "flutter": {
     "version": "3.38.8",
     "watch": {}
